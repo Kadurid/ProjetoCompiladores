@@ -33,24 +33,77 @@ void factor();
 void multiply();
 void divide();
 int isAddOp();
+void ident();
+void assignment();
+
 /* PROGRAMA PRINCIPAL */
 int main()
 {
     init();
-    expression();
+    assignment();
+    if (look != '\n')
+        expected("NewLine");
 
     return 0;
 }
 
-/* analisa e traduz um fator matemático */
+/* analisa e traduz um fator */
+
 void factor()
+
 {
-          if (look == '(') {
+
+        if (look == '(') {
+
                 match('(');
+
                 expression();
+
                 match(')');
+
+        } else if(isalpha(look))
+
+                ident();
+
+        else
+
+         emit("MOV AX, %c", getNum());
+
+}
+
+/* analisa e traduz um identificador */
+
+/* analisa e traduz um comando de atribuição */
+void assignment(){
+
+    char name;
+    name = getName();
+    match('=');
+    expression();
+    emit("MOV [%c], AX", name);
+
+}
+
+void ident()
+
+{
+
+        char name;
+
+        name = getName();
+
+        if (look == '(') {
+
+                match('(');
+
+                match(')');
+
+                emit("CALL %c", name);
+
         } else
-                emit("MOV AX, %c", getNum());
+
+                emit("MOV AX, [%c]", name);
+
 }
 
 /* reconhece e traduz uma multiplicação */
